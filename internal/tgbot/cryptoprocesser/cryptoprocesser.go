@@ -2,6 +2,9 @@ package cryptoprocesser
 
 import (
 	"context"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/nickzhog/crypto-bot/internal/tgbot/config"
@@ -40,6 +43,43 @@ func (p *cryptoProcesser) StartScan(ctx context.Context) error {
 	}
 }
 
+type Answer struct {
+	Symbol string `json:"symbol"`
+	Price  string `json:"price"`
+}
+
 func (p *cryptoProcesser) scan(ctx context.Context) {
 
+	answer, err := requestToBinance(ctx)
+	if err != nil {
+		p.logger.Error(err)
+	}
+
+	currencies := make([]cryptocurrency.Currency, len(answer)/10)
+	for _, v := range answer {
+		re := regexp.MustCompile(`^.+USDT$`)
+		match := re.MatchString(v.Symbol)
+		if !match {
+			continue
+		}
+
+		v.Symbol = strings.TrimSuffix(v.Symbol, "USDT")
+
+		priceFloat, err := strconv.ParseFloat(v.Price, 64)
+		if err != nil {
+			p.logger.Error(err)
+			continue
+		}
+
+		currencies = append(currencies, cryptocurrency.NewCurrency(v.Symbol, priceFloat))
+	}
+
+	if len(currencies) < 1 {
+		return
+	}
+
+	err = p.currencyRep.UpsertMany(ctx, currencies)
+	if err != nil {
+		p.logger.Error(err)
+	}
 }

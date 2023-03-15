@@ -9,5 +9,4 @@ func (t *telegramBot) handleUpdate(u tgbotapi.Update) {
 		return
 	}
 
-	return
 }
