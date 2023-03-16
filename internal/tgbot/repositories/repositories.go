@@ -7,8 +7,8 @@ import (
 	"github.com/nickzhog/crypto-bot/internal/tgbot/config"
 	"github.com/nickzhog/crypto-bot/internal/tgbot/service/cryptocurrency"
 	currencydb "github.com/nickzhog/crypto-bot/internal/tgbot/service/cryptocurrency/db"
-	"github.com/nickzhog/crypto-bot/internal/tgbot/service/requests"
-	requestsdb "github.com/nickzhog/crypto-bot/internal/tgbot/service/requests/db"
+	"github.com/nickzhog/crypto-bot/internal/tgbot/service/request"
+	requestdb "github.com/nickzhog/crypto-bot/internal/tgbot/service/request/db"
 	"github.com/nickzhog/crypto-bot/pkg/logging"
 	"github.com/nickzhog/crypto-bot/pkg/postgres"
 )
@@ -20,7 +20,7 @@ const (
 
 type Repositories struct {
 	Currency cryptocurrency.Repository
-	Requests requests.Repository
+	Request  request.Repository
 }
 
 func GetRepositories(ctx context.Context, logger *logging.Logger, cfg *config.Config) Repositories {
@@ -36,6 +36,6 @@ func GetRepositories(ctx context.Context, logger *logging.Logger, cfg *config.Co
 	}
 	return Repositories{
 		Currency: currencydb.NewRepository(pool, logger),
-		Requests: requestsdb.NewRepository(pool, logger),
+		Request:  requestdb.NewRepository(pool, logger),
 	}
 }

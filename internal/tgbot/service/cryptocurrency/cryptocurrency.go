@@ -2,10 +2,12 @@ package cryptocurrency
 
 import (
 	"fmt"
+	"time"
 )
 
 type Currency struct {
 	Name                string
+	LastUpdate          time.Time
 	PriceToDollarString string
 	PriceToDollarFloat  float64
 }

@@ -67,7 +67,7 @@ func (p *cryptoProcesser) scan(ctx context.Context) {
 
 		priceFloat, err := strconv.ParseFloat(v.Price, 64)
 		if err != nil {
-			p.logger.Error(err)
+			p.logger.Trace(err)
 			continue
 		}
 

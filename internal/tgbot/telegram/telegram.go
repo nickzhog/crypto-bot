@@ -42,10 +42,30 @@ func (t *telegramBot) StartUpdates(ctx context.Context) error {
 	for {
 		select {
 		case update := <-updates:
-			t.handleUpdate(update)
+			t.handleUpdate(ctx, update)
 
 		case <-ctx.Done():
 			return nil
+		}
+	}
+}
+
+func (t *telegramBot) handleUpdate(ctx context.Context, u tgbotapi.Update) {
+
+	if u.CallbackQuery != nil {
+		t.handleCallbackData(ctx, *u.CallbackQuery)
+	}
+
+	if u.Message != nil {
+		switch u.Message.Command() {
+		case "currencies":
+			t.showCurrencies(ctx, u.Message.From.ID, 0)
+
+		case "statistics":
+			t.showStatistics(ctx, u)
+
+		default:
+			t.sendHelloMsg(u)
 		}
 	}
 }
