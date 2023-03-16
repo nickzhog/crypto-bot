@@ -86,5 +86,9 @@ func (r *repository) FindForUser(ctx context.Context, usrID int64) ([]request.Re
 		return nil, err
 	}
 
+	if len(requests) < 1 {
+		return nil, request.ErrNoRows
+	}
+
 	return requests, nil
 }
