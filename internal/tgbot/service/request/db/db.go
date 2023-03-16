@@ -92,3 +92,24 @@ func (r *repository) FindForUser(ctx context.Context, usrID int64) ([]request.Re
 
 	return requests, nil
 }
+
+func (r *repository) CountForUser(ctx context.Context, usrID int64) (int, error) {
+	q := `
+	SELECT 
+    	COUNT(*) AS total_count
+	FROM 
+		public.request
+	WHERE 
+		user_id = $1;
+
+`
+	count := 0
+
+	err := r.client.QueryRow(ctx, q, usrID).Scan(&count)
+	if err != nil {
+		r.logger.Error(err)
+		return 0, err
+	}
+
+	return count, nil
+}

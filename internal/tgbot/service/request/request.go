@@ -25,7 +25,13 @@ func PrepareStatistic(ctx context.Context, usrID int64, rep Repository) (string,
 		return "", err
 	}
 
-	text := "В статистике отображены 5 последних запросов от вас:\n\n"
+	count, err := rep.CountForUser(ctx, usrID)
+	if err != nil {
+		return "", err
+	}
+
+	text := fmt.Sprintf("Всего вы делали %v запросов\n", count)
+	text += "Далее отображены 5 последних запросов от вас:\n\n"
 	for _, v := range requests {
 		text += fmt.Sprintf("Криптовалюта: %s, Цена(на момент запроса): %s, Дата и время: %s\n",
 			v.CurrencyName, v.Price, v.CreateAt.Format("02.01 15:04"))
